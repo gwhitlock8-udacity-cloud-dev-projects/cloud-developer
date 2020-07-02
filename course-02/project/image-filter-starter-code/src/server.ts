@@ -1,4 +1,4 @@
-import express, { NextFunction } from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import { filterImageFromURL, deleteLocalFiles } from "./util/util";
 
@@ -29,7 +29,7 @@ import { filterImageFromURL, deleteLocalFiles } from "./util/util";
 
   //! END @TODO1
 
-  app.get("/filterimage", async (req, res, next) => {
+  app.get("/filteredimage", async (req, res) => {
     try {
       let url: string = req.query.image_url;
       let filteredPath = await filterImageFromURL(url);
