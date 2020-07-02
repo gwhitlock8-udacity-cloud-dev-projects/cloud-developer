@@ -29,12 +29,25 @@ import { filterImageFromURL, deleteLocalFiles } from "./util/util";
 
   //! END @TODO1
 
+  const validateImageQuery = async (imageUrl: string) => {
+    let res = imageUrl.match(
+      /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+    );
+    if (res == null) return false;
+    else return true;
+  };
+
   app.get("/filteredimage", async (req, res) => {
+    let { image_url } = req.query;
+    let isValid = validateImageQuery(image_url);
+    if (!isValid) {
+      return res.status(400).send("invalid image url");
+    }
     try {
-      let url: string = req.query.image_url;
-      let filteredPath = await filterImageFromURL(url);
-      res.status(200).sendFile(filteredPath);
-      await deleteLocalFiles([filteredPath]);
+      let filteredPath = await filterImageFromURL(image_url);
+      res.sendFile(filteredPath, async () => {
+        await deleteLocalFiles([filteredPath]);
+      });
     } catch (err) {
       res.status(400).send(err);
     }
